@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loading…</title>
+
+  <!-- Config MUST load before the app script -->
+  <script src="config.js"></script>
+
+  <style>
+:root{
+  --bg:#07080c;
+  --bg2:#0b0d14;
+
+  --panel: rgba(16,17,24,.78);
+  --panel2: rgba(20,22,32,.70);
+
+  --stroke: rgba(255,255,255,.08);
+  --stroke2: rgba(47,183,255,.35);
+
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.62);
+  --muted2: rgba(255,255,255,.42);
+
+  --accent:#2fb7ff;
+  --accent2:#64d6ff;
+
+  /* IMPORTANT: used for rgba(var(--accentRgb), .22) */
+  --accentRgb: 47,183,255;
+  --accent2Rgb: 100,214,255;
+
+  --good:#2dd4bf;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+
+  --shadow: rgba(0,0,0,.55);
+  --glow: rgba(var(--accentRgb), .22);
+
+  --radius: 18px;
+  --blur: 16px;
+
+  --gridGap: 18px;
+  --floatMs: 5200ms;
+  --shimmerMs: 1500ms;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  background:
+    radial-gradient(1200px 800px at 15% 10%, rgba(var(--accentRgb), .14), transparent 55%),
+    radial-gradient(1200px 800px at 85% 15%, rgba(var(--accent2Rgb), .10), transparent 60%),
+    radial-gradient(900px 700px at 50% 85%, rgba(255,255,255,.06), transparent 60%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+  color: var(--text);
+  overflow:hidden;
+}
+
+.bg-video{
+  position:fixed; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  filter:saturate(1.05) contrast(1.05) brightness(.8);
+  transform:scale(1.03);
+  opacity:.65;
+}
+
+.bg-overlay{
+  position:fixed; inset:0;
+  background:
+    radial-gradient(800px 520px at 20% 10%, rgba(var(--accentRgb), .22), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.62));
+  pointer-events:none;
+}
+
+.wrap{
+  position:relative;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  padding: 24px 24px 18px;
+  gap: 16px;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 16px;
+  animation: fadeInUp 700ms ease both;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  min-width: 280px;
+}
+.logo{
+  width:44px; height:44px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 14px 40px var(--shadow), 0 0 0 6px rgba(var(--accentRgb), .08);
+}
+.server-name{
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+.subtitle{
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.status-pill{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.28);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 30px var(--shadow);
+  backdrop-filter: blur(var(--blur));
+}
+
+.dot{
+  width:10px; height:10px; border-radius:999px;
+  background: rgba(255,255,255,.18);
+  box-shadow: 0 0 0 4px rgba(255,255,255,.08);
+}
+.dot.live{
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(var(--accentRgb), .22), 0 0 24px rgba(var(--accentRgb), .32);
+}
+
+#statusText{font-size: 13px; color: var(--text); opacity:.95}
+
+.grid{
+  flex:1;
+  display:grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: var(--gridGap);
+  min-height: 0;
+  animation: fadeInUp 900ms ease 120ms both;
+}
+
+.card{
+  position:relative;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 26px 70px var(--shadow);
+  overflow:hidden;
+  backdrop-filter: blur(var(--blur));
+}
+
+.card::before{
+  content:"";
+  position:absolute; inset:-2px;
+  background:
+    radial-gradient(420px 220px at 18% 8%, rgba(var(--accentRgb), .28), transparent 55%),
+    radial-gradient(420px 220px at 82% 0%, rgba(var(--accent2Rgb), .18), transparent 60%);
+  opacity:.85;
+  pointer-events:none;
+}
+.card::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.42));
+  pointer-events:none;
+}
+.card > *{position:relative; z-index:2}
+
+.card-header{
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.card-title{
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing:.2px;
+}
+.card-sub{
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hero{ padding-bottom: 10px; }
+
+.progress{
+  padding: 14px 18px 8px;
+}
+.progress-bar{
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.10);
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(var(--accentRgb), .85), rgba(var(--accent2Rgb), .92));
+  box-shadow: 0 0 20px rgba(var(--accentRgb), .26);
+  transition: width 300ms ease;
+}
+.progress-meta{
+  margin-top: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+.muted{color: var(--muted)}
+.small{font-size: 12px}
+#progressPct{font-variant-numeric: tabular-nums;}
+
+.stats{
+  padding: 10px 18px 14px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.stat{
+  padding: 14px 14px 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,.24), rgba(0,0,0,.10));
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  transform: translateZ(0);
+  animation: floaty var(--floatMs) ease-in-out infinite;
+}
+.stat:nth-child(2){animation-delay: 240ms}
+.stat:nth-child(3){animation-delay: 480ms}
+.stat:nth-child(4){animation-delay: 720ms}
+.stat:nth-child(5){animation-delay: 960ms}
+.stat:nth-child(6){animation-delay: 1200ms}
+
+.stat-label{
+  font-size: 11px;
+  color: var(--muted);
+}
+.stat-value{
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing:.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.skeleton{
+  position:relative;
+  color: transparent !important;
+  background: rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.skeleton::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  transform: translateX(-120%);
+  animation: shimmer var(--shimmerMs) ease-in-out infinite;
+}
+
+.error{
+  margin: 0 18px 12px;
+  padding: 14px 14px 12px;
+  border-radius: 16px;
+  background: rgba(239,68,68,.10);
+  border: 1px solid rgba(239,68,68,.26);
+}
+.error-title{font-weight: 900; font-size: 13px}
+.error-msg{margin-top: 6px; font-size: 12px; color: rgba(255,255,255,.80)}
+.hidden{display:none}
+
+.footer-note{
+  margin: 0 18px 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.10);
+  display:flex;
+  align-items:flex-start;
+  gap: 10px;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(var(--accentRgb), .16);
+  border: 1px solid rgba(var(--accentRgb), .30);
+  color: rgba(255,255,255,.92);
+  font-size: 12px;
+  font-weight: 900;
+  white-space:nowrap;
+}
+
+.side .list{
+  padding: 12px 14px 14px;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  max-height: calc(100% - 64px);
+  overflow:auto;
+}
+.list-empty{
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.list-item{
+  padding: 12px 12px 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.10));
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+.list-item:hover{
+  transform: translateY(-1px);
+  border-color: rgba(var(--accentRgb), .30);
+}
+.li-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+.li-name{font-weight: 900; font-size: 13px}
+.li-type{font-size: 11px; color: var(--muted); margin-top: 2px}
+.li-badge{
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing:.3px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(var(--accentRgb), .14);
+}
+.li-meta{
+  margin-top: 8px;
+  display:flex;
+  justify-content:space-between;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 0 4px;
+  opacity:.95;
+  animation: fadeInUp 900ms ease 240ms both;
+}
+
+@keyframes shimmer{
+  0%{transform: translateX(-120%)}
+  100%{transform: translateX(120%)}
+}
+@keyframes floaty{
+  0%,100%{transform: translateY(0)}
+  50%{transform: translateY(-2px)}
+}
+@keyframes fadeInUp{
+  from{opacity:0; transform: translateY(10px)}
+  to{opacity:1; transform: translateY(0)}
+}
+
+/* Scrollbar */
+.list::-webkit-scrollbar{width: 10px}
+.list::-webkit-scrollbar-track{background: rgba(255,255,255,.04); border-radius: 999px}
+.list::-webkit-scrollbar-thumb{background: rgba(255,255,255,.14); border-radius: 999px}
+.list::-webkit-scrollbar-thumb:hover{background: rgba(var(--accentRgb), .25)}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .grid{grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+
+<body>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="assets/bg.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-overlay"></div>
+
+  <main class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <img class="logo" src="assets/logo.png" alt="logo" />
+        <div class="brand-text">
+          <div id="serverName" class="server-name">Your Server</div>
+          <div id="subtitle" class="subtitle">Welcome back — syncing server stats...</div>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <div class="dot"></div>
+        <div id="statusText">Connecting…</div>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="card hero">
+        <div class="card-header">
+          <div id="leftTitle" class="card-title">Loading into the city</div>
+          <div id="leftSub" class="card-sub">Live server stats pushed from Lua</div>
+        </div>
+
+        <div class="progress">
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+          <div class="progress-meta">
+            <div id="progressLabel" class="muted">Initializing…</div>
+            <div id="progressPct" class="muted">0%</div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Characters</div>
+            <div id="statChars" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Cash</div>
+            <div id="statCash" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Bank</div>
+            <div id="statBank" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Jail Records</div>
+            <div id="statJail" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Businesses</div>
+            <div id="statBiz" class="stat-value">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Vehicles</div>
+            <div id="statVeh" class="stat-value">—</div>
+          </div>
+        </div>
+
+        <div id="errorBox" class="error hidden">
+          <div id="errorTitle" class="error-title">Profile sync issue</div>
+          <div id="errorMsg" class="error-msg">—</div>
+        </div>
+
+        <div class="footer-note">
+          <span id="tipPill" class="pill">Tip</span>
+          <span id="tipText" class="muted">If your stats show “—”, make sure oxmysql is started and your mysql_connection_string is correct.</span>
+        </div>
+      </div>
+
+      <div class="card side">
+        <div class="card-header">
+          <div id="rightTitle" class="card-title">Owned Businesses</div>
+          <div id="rightSub" class="card-sub">Latest businesses in the city</div>
+        </div>
+
+        <div id="bizList" class="list">
+          <div id="emptyList" class="list-empty muted">Waiting for server stats…</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bottom">
+      <div class="muted small">
+        <span id="footerLeft">DB-powered Loading Screen</span> • <span id="footerRight">Accent theme</span>
+      </div>
+      <div class="muted small" id="clock">—</div>
+    </footer>
+  </main>
+
+  <!-- app.js embedded -->
+  <script>
+(() => {
+  const CFG = (window.NV_CFG || {});
+  const $ = (id) => document.getElementById(id);
+
+  const escapeHtml = (s) => String(s ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+
+  const fmtMoney = (n) => {
+    const num = Number(n || 0);
+    return num.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  };
+
+  const setCssVar = (k, v) => {
+    if (v === undefined || v === null) return;
+    document.documentElement.style.setProperty(k, String(v));
+  };
+
+  const hexToRgb = (hex) => {
+    const h = String(hex || '').replace('#','').trim();
+    if (h.length !== 6) return null;
+    const r = parseInt(h.slice(0,2), 16);
+    const g = parseInt(h.slice(2,4), 16);
+    const b = parseInt(h.slice(4,6), 16);
+    if ([r,g,b].some(n => Number.isNaN(n))) return null;
+    return `${r},${g},${b}`;
+  };
+
+  const applyConfig = () => {
+    const t = CFG.text || {};
+    const c = CFG.colors || {};
+    const ui = CFG.ui || {};
+    const m = CFG.media || {};
+
+    document.title = t.title || "Loading…";
+
+    // Text
+    $('serverName').textContent = t.serverName || "Your Server";
+    $('subtitle').textContent = t.subtitle || "Welcome back…";
+    $('leftTitle').textContent = t.leftTitle || "Loading…";
+    $('leftSub').textContent = t.leftSub || "Live server stats…";
+    $('rightTitle').textContent = t.rightTitle || "Businesses";
+    $('rightSub').textContent = t.rightSub || "Latest businesses…";
+    $('tipPill').textContent = t.tipPill || "Tip";
+    $('tipText').textContent = t.tipText || "";
+    $('footerLeft').textContent = t.footerLeft || "";
+    $('footerRight').textContent = t.footerRight || "";
+    $('emptyList').textContent = t.emptyList || "Waiting…";
+    $('errorTitle').textContent = t.errorTitle || "Sync issue";
+
+    // CSS vars
+    setCssVar('--bg', c.bg);
+    setCssVar('--bg2', c.bg2);
+    setCssVar('--panel', c.panel);
+    setCssVar('--panel2', c.panel2);
+    setCssVar('--stroke', c.stroke);
+    setCssVar('--stroke2', c.stroke2);
+    setCssVar('--text', c.text);
+    setCssVar('--muted', c.muted);
+    setCssVar('--muted2', c.muted2);
+
+    setCssVar('--accent', c.accent);
+    setCssVar('--accent2', c.accent2);
+    setCssVar('--good', c.good);
+    setCssVar('--warn', c.warn);
+    setCssVar('--bad', c.bad);
+
+    setCssVar('--shadow', c.shadow);
+    setCssVar('--glow', c.glow);
+
+    setCssVar('--radius', (ui.radius ?? 18) + 'px');
+    setCssVar('--blur', (ui.blur ?? 16) + 'px');
+    setCssVar('--gridGap', (ui.gridGap ?? 18) + 'px');
+    setCssVar('--floatMs', (ui.floatMs ?? 5200) + 'ms');
+    setCssVar('--shimmerMs', (ui.shimmerMs ?? 1500) + 'ms');
+
+    // Derive RGB vars (so accent affects all rgba() glows)
+    const aRgb = c.accentRgb || hexToRgb(c.accent);
+    const a2Rgb = c.accent2Rgb || hexToRgb(c.accent2 || c.accent);
+    if (aRgb) setCssVar('--accentRgb', aRgb);
+    if (a2Rgb) setCssVar('--accent2Rgb', a2Rgb);
+
+    // Media
+    const video = document.querySelector('.bg-video');
+    const src = video?.querySelector('source');
+    if (video && src) {
+      if (!m.videoSrc) {
+        video.style.display = 'none';
+      } else {
+        src.setAttribute('src', m.videoSrc);
+        try { video.load(); } catch {}
+      }
+    }
+    const logo = document.querySelector('.logo');
+    if (logo && m.logoSrc) logo.setAttribute('src', m.logoSrc);
+  };
+
+  // Progress + status
+  const setProgress = (pct, label) => {
+    pct = Math.max(0, Math.min(100, pct));
+    $('progressFill').style.width = pct.toFixed(0) + '%';
+    $('progressPct').textContent = pct.toFixed(0) + '%';
+    if (label) $('progressLabel').textContent = label;
+  };
+  const setStatus = (t) => $('statusText').textContent = t;
+
+  // Error
+  const showError = (msg) => {
+    $('errorBox').classList.remove('hidden');
+    $('errorMsg').textContent = msg || 'Unknown error';
+  };
+  const hideError = () => $('errorBox').classList.add('hidden');
+
+  // Skeleton state
+  const skeletonOn = () => {
+    ['statChars','statCash','statBank','statJail','statBiz','statVeh'].forEach(id => {
+      const el = $(id);
+      el.classList.add('skeleton');
+      el.textContent = '000000';
+    });
+  };
+  const skeletonOff = () => {
+    ['statChars','statCash','statBank','statJail','statBiz','statVeh'].forEach(id => {
+      $(id).classList.remove('skeleton');
+    });
+  };
+
+  // Animated counters
+  const tweenNumber = (el, to, fmt) => {
+    const from = Number(el.getAttribute('data-n') || 0);
+    const start = performance.now();
+    const dur = 700 + Math.random()*450;
+    const toN = Number(to || 0);
+
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      const n = from + (toN - from) * eased;
+      el.textContent = fmt ? fmt(n) : Math.round(n).toString();
+      if (t < 1) requestAnimationFrame(step);
+      else el.setAttribute('data-n', String(toN));
+    };
+    requestAnimationFrame(step);
+  };
+
+  const setStats = (p) => {
+    const t = (CFG.text || {});
+    $('serverName').textContent = p.serverName || t.serverName || 'Your Server';
+    $('subtitle').textContent = p.subtitle || t.subtitle || 'Welcome…';
+
+    skeletonOff();
+
+    tweenNumber($('statChars'), p.characters ?? 0, (n)=>Math.round(n).toString());
+    tweenNumber($('statCash'),  p.cash ?? 0, (n)=>fmtMoney(Math.round(n)));
+    tweenNumber($('statBank'),  p.bank ?? 0, (n)=>fmtMoney(Math.round(n)));
+    tweenNumber($('statJail'),  p.jailRecords ?? 0, (n)=>Math.round(n).toString());
+    tweenNumber($('statBiz'),   p.businesses ?? 0, (n)=>Math.round(n).toString());
+    tweenNumber($('statVeh'),   p.vehicles ?? 0, (n)=>Math.round(n).toString());
+
+    const list = $('bizList');
+    list.innerHTML = '';
+
+    const rows = Array.isArray(p.businessesPreview) ? p.businessesPreview : [];
+    const max = Number((CFG.ui || {}).maxBusinessesPreview ?? 6);
+    const take = rows.slice(0, Math.max(0, max));
+
+    if (!take.length) {
+      const empty = document.createElement('div');
+      empty.className = 'list-empty muted';
+      empty.textContent = (CFG.text || {}).emptyList || 'No businesses found.';
+      list.appendChild(empty);
+      return;
+    }
+
+    for (const r of take) {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+
+      const top = document.createElement('div');
+      top.className = 'li-top';
+
+      const left = document.createElement('div');
+      left.innerHTML = `<div class="li-name">${escapeHtml(r.name || 'Business')}</div><div class="li-type">${escapeHtml(r.type || '—')}</div>`;
+
+      const badge = document.createElement('div');
+      badge.className = 'li-badge';
+      badge.textContent = (Number(r.is_open) === 1) ? 'OPEN' : 'CLOSED';
+
+      top.appendChild(left);
+      top.appendChild(badge);
+
+      const meta = document.createElement('div');
+      meta.className = 'li-meta';
+      meta.innerHTML = `<div>Balance: $${fmtMoney(r.balance)}</div><div>DB-linked</div>`;
+
+      item.appendChild(top);
+      item.appendChild(meta);
+      list.appendChild(item);
+    }
+  };
+
+  // Clock
+  setInterval(() => {
+    const d = new Date();
+    $('clock').textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }, 500);
+
+  // Fake progress (stops when stats arrive)
+  let gotStats = false;
+  let fakePct = 0;
+  const fakeTimer = setInterval(() => {
+    if (gotStats) return;
+    fakePct = Math.min(92, fakePct + (fakePct < 60 ? 2.4 : 1.0));
+    setProgress(fakePct, fakePct < 20 ? 'Initializing…' : fakePct < 55 ? 'Loading assets…' : 'Almost ready…');
+  }, 250);
+
+  // Dot linking (becomes live when Lua is talking)
+  const dot = document.querySelector('.dot');
+  let lastLuaAt = 0;
+  const setDotLive = (live) => dot.classList.toggle('live', !!live);
+  setInterval(() => setDotLive(Date.now() - lastLuaAt < 3000), 400);
+
+  // Optional: stats.json fetch (OFF by default)
+  const ui = CFG.ui || {};
+  const enableStatsJsonFetch = !!ui.enableStatsJsonFetch;
+  const statsJsonPath = String(ui.statsJsonPath || 'stats.json');
+  const statsFetchTries = Number(ui.statsFetchTries ?? 10);
+  const statsFetchInterval = Number(ui.statsFetchInterval ?? 700);
+
+  const fetchStatsOnce = async () => {
+    try {
+      const url = `${statsJsonPath}?ts=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data && data.ok) {
+        gotStats = true;
+        clearInterval(fakeTimer);
+        hideError();
+        setStatus('Server stats loaded ✅');
+        setProgress(100, 'Stats loaded — entering…');
+        setStats(data);
+      }
+    } catch (e) {
+      // Only show if they explicitly enabled fetch
+      showError(`Waiting for stats… (${String(e.message || e)})`);
+    }
+  };
+
+  if (enableStatsJsonFetch) {
+    let tries = 0;
+    const tmr = setInterval(() => {
+      tries++;
+      if (gotStats || tries > statsFetchTries) { clearInterval(tmr); return; }
+      fetchStatsOnce();
+    }, statsFetchInterval);
+    fetchStatsOnce();
+  }
+
+  // Listen for FiveM loading screen messages + custom Lua pushes
+  window.addEventListener('message', (e) => {
+    let data = e.data;
+    if (typeof data === 'string') {
+      try { data = JSON.parse(data); } catch {}
+    }
+    data = data || {};
+
+    // FiveM init events
+    if (data.eventName && typeof data.eventName === 'string') {
+      if (data.eventName === 'startInitFunctionOrder') setStatus('Initializing…');
+      if (data.eventName === 'initFunctionInvoking') {
+        if (!gotStats) setStatus('Loading…');
+        if (typeof data.eventData === 'object' && data.eventData.name) {
+          $('progressLabel').textContent = String(data.eventData.name);
+        }
+        setProgress(Math.min(97, fakePct + 1.5));
+      }
+      if (data.eventName === 'endInitFunction') setStatus('Finalizing…');
+    }
+
+    // Any custom action from Lua updates "live" dot
+    if (data.action) lastLuaAt = Date.now();
+
+    if (data.action === 'hello') {
+      hideError();
+      setStatus('Lua linked — waiting for stats…');
+    }
+
+    if (data.action === 'status') {
+      hideError();
+      if (!gotStats) setStatus(String(data.text || 'Loading…'));
+    }
+
+    // THIS is what you should send from Lua:
+    // SendNUIMessage({ action = "stats", payload = { ... } })
+    if (data.action === 'stats') {
+      gotStats = true;
+      clearInterval(fakeTimer);
+      hideError();
+      setStatus('Server stats loaded ✅');
+      setProgress(100, 'Stats loaded — entering…');
+      setStats(data.payload || {});
+    }
+
+    // Optional: theme updates from Lua
+    if (data.action === 'theme' && data.colors) {
+      const c = data.colors || {};
+      if (c.accent) setCssVar('--accent', c.accent);
+      if (c.accent2) setCssVar('--accent2', c.accent2);
+      const aRgb = c.accentRgb || hexToRgb(c.accent);
+      const a2Rgb = c.accent2Rgb || hexToRgb(c.accent2 || c.accent);
+      if (aRgb) setCssVar('--accentRgb', aRgb);
+      if (a2Rgb) setCssVar('--accent2Rgb', a2Rgb);
+    }
+  });
+
+  // Boot
+  applyConfig();
+  skeletonOn();
+  setStatus('Connecting…');
+  setProgress(0, 'Initializing…');
+
+  // If you want to see if config loads:
+  // console.log("NV_CFG:", window.NV_CFG);
+})();
+  </script>
+</body>
+</html>
