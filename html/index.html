@@ -37,8 +37,8 @@
   --shadow: rgba(0,0,0,.55);
   --glow: rgba(var(--accentRgb), .22);
 
-  --radius: 18px;
-  --blur: 16px;
+  --radius: 24px;
+  --blur: 18px;
 
   --gridGap: 18px;
   --floatMs: 5200ms;
@@ -123,9 +123,9 @@ body{
   gap: 10px;
   padding: 10px 14px;
   border-radius: 999px;
-  background: rgba(0,0,0,.28);
+  background: rgba(0,0,0,.22);
   border: 1px solid rgba(255,255,255,.10);
-  box-shadow: 0 10px 30px var(--shadow);
+  box-shadow: 0 14px 36px rgba(0,0,0,.55);
   backdrop-filter: blur(var(--blur));
 }
 
@@ -153,9 +153,9 @@ body{
 .card{
   position:relative;
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
+  background: var(--panel);
   border: 1px solid rgba(255,255,255,.10);
-  box-shadow: 0 26px 70px var(--shadow);
+  box-shadow: 0 18px 55px rgba(0,0,0,.55);
   overflow:hidden;
   backdrop-filter: blur(var(--blur));
 }
@@ -198,7 +198,7 @@ body{
   padding: 14px 18px 8px;
 }
 .progress-bar{
-  height: 10px;
+  height: 12px;
   border-radius: 999px;
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.10);
@@ -232,12 +232,23 @@ body{
 .stat{
   padding: 14px 14px 12px;
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(0,0,0,.24), rgba(0,0,0,.10));
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08));
   border: 1px solid rgba(255,255,255,.10);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
   transform: translateZ(0);
   animation: floaty var(--floatMs) ease-in-out infinite;
 }
+
+.stat-top{display:flex; align-items:center; gap:10px}
+.stat-icon{
+  width:28px; height:28px; border-radius:999px;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(var(--accentRgb), .16);
+  border: 1px solid rgba(var(--accentRgb), .28);
+  box-shadow: 0 10px 22px rgba(var(--accentRgb), .12);
+  filter: saturate(1.05);
+}
+
 .stat:nth-child(2){animation-delay: 240ms}
 .stat:nth-child(3){animation-delay: 480ms}
 .stat:nth-child(4){animation-delay: 720ms}
@@ -324,7 +335,7 @@ body{
 .list-item{
   padding: 12px 12px 10px;
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.10));
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.10));
   border: 1px solid rgba(255,255,255,.10);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
   transition: transform 180ms ease, border-color 180ms ease;
@@ -431,27 +442,45 @@ body{
 
         <div class="stats">
           <div class="stat">
-            <div class="stat-label">Characters</div>
+            <div class="stat-top">
+              <div class="stat-icon" aria-hidden="true">👤</div>
+              <div class="stat-label">Characters</div>
+            </div>
             <div id="statChars" class="stat-value">—</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Cash</div>
+            <div class="stat-top">
+              <div class="stat-icon" aria-hidden="true">💵</div>
+              <div class="stat-label">Cash</div>
+            </div>
             <div id="statCash" class="stat-value">—</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Bank</div>
+            <div class="stat-top">
+              <div class="stat-icon" aria-hidden="true">🏦</div>
+              <div class="stat-label">Bank</div>
+            </div>
             <div id="statBank" class="stat-value">—</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Jail Records</div>
+            <div class="stat-top">
+              <div class="stat-icon" aria-hidden="true">⛓️</div>
+              <div class="stat-label">Jail Records</div>
+            </div>
             <div id="statJail" class="stat-value">—</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Businesses</div>
+            <div class="stat-top">
+              <div class="stat-icon" aria-hidden="true">🏪</div>
+              <div class="stat-label">Businesses</div>
+            </div>
             <div id="statBiz" class="stat-value">—</div>
           </div>
           <div class="stat">
-            <div class="stat-label">Vehicles</div>
+            <div class="stat-top">
+              <div class="stat-icon" aria-hidden="true">🚗</div>
+              <div class="stat-label">Vehicles</div>
+            </div>
             <div id="statVeh" class="stat-value">—</div>
           </div>
         </div>
@@ -518,6 +547,21 @@ body{
     const b = parseInt(h.slice(4,6), 16);
     if ([r,g,b].some(n => Number.isNaN(n))) return null;
     return `${r},${g},${b}`;
+  };
+
+  
+  const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+  const deepMerge = (target, src) => {
+    if (!isObj(target) || !isObj(src)) return target;
+    for (const k of Object.keys(src)) {
+      const sv = src[k];
+      if (isObj(sv)) {
+        target[k] = deepMerge(isObj(target[k]) ? target[k] : {}, sv);
+      } else {
+        target[k] = sv;
+      }
+    }
+    return target;
   };
 
   const applyConfig = () => {
@@ -805,6 +849,12 @@ body{
       const a2Rgb = c.accent2Rgb || hexToRgb(c.accent2 || c.accent);
       if (aRgb) setCssVar('--accentRgb', aRgb);
       if (a2Rgb) setCssVar('--accent2Rgb', a2Rgb);
+    }
+
+    // Full config override from Lua (config.lua)
+    if (data.action === 'cfg' && data.cfg) {
+      deepMerge(CFG, data.cfg || {});
+      applyConfig();
     }
   });
 

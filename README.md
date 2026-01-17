@@ -1,23 +1,14 @@
-# Az-Loading
+# nv_db_loadscreen v2 (Inline)
 
-✅ `style.css` and `app.js` are now INLINE inside `html/index.html` ✅ All colors + text +
-media are configurable in `html/config.js`.
+✅ `style.css` and `app.js` are now INLINE inside `html/index.html`
+✅ All colors + text + media are configurable in `html/config.js`
 
-**Resource:** `Az-Loading`
-**Author:** NV
-**fx_version:** `cerulean`
+## Customize
+Open `html/config.js` and edit:
+- `colors` (every CSS variable)
+- `text` (all labels)
+- `media.videoSrc` / `media.logoSrc`
 
-## What it does
-Shows live data on loading screen for Azure Framework 
-
-## Features
-- NUI UI included.
-
-## Commands
-_None_
-
-## Exports
-_None_
-
-## Dependencies
-- `oxmysql`
+## Install
+ensure oxmysql
+ensure nv_db_loadscreen

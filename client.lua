@@ -15,10 +15,38 @@ local function sendToLoadscreen(tbl)
   SendLoadingScreenMessage(payload)
 end
 
+local function buildCfg()
+  local cfg = {}
+
+  if Config then
+    -- text
+    if type(Config.Text) == 'table' then cfg.text = Config.Text end
+    cfg.text = cfg.text or {}
+    if Config.ServerName then cfg.text.serverName = Config.ServerName end
+    if Config.Subtitle then cfg.text.subtitle = Config.Subtitle end
+
+    -- theme + ui
+    if type(Config.Theme) == 'table' then cfg.colors = Config.Theme end
+    if type(Config.UI) == 'table' then cfg.ui = Config.UI end
+
+    cfg.ui = cfg.ui or {}
+    if Config.MaxBusinessesPreview then
+      cfg.ui.maxBusinessesPreview = tonumber(Config.MaxBusinessesPreview) or 6
+    end
+
+    -- allow html to fetch the latest snapshot
+    cfg.ui.enableStatsJsonFetch = true
+    cfg.ui.statsJsonPath = 'stats.json'
+  end
+
+  return cfg
+end
+
 CreateThread(function()
-  -- Let UI know Lua is alive
+  -- Let UI know Lua is alive + push config overrides early
   Wait(50)
   sendToLoadscreen({ action = 'hello' })
+  sendToLoadscreen({ action = 'cfg', cfg = buildCfg() })
 
   -- We cannot talk to the server until the network session is started.
   while not NetworkIsSessionStarted() do

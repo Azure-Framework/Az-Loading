@@ -1,7 +1,7 @@
 window.NV_CFG = {
   text: {
     title: "Loading…",
-    serverName: "Azure Framework",
+    serverName: "Your Server",
     subtitle: "Welcome back — syncing server stats...",
 
     leftTitle: "Loading into the city",
@@ -14,7 +14,7 @@ window.NV_CFG = {
     tipText: "If your stats show “—”, make sure oxmysql is started and your mysql_connection_string is correct.",
 
     footerLeft: "DB-powered Loading Screen",
-    footerRight: "Blue accent theme",
+    footerRight: "Purple / Blue theme",
 
     emptyList: "Waiting for server stats…",
     errorTitle: "Profile sync issue"
@@ -36,8 +36,8 @@ window.NV_CFG = {
     muted2:"rgba(255,255,255,.42)",
 
 
-    accent:"#2fb3ffff",
-    accent2:"#9b00af",
+    accent:"#4da3ff",
+    accent2:"#a855f7",
     good:"#2d35d4ff",
     warn:"#f59e0b",
     bad:"#ef4444",

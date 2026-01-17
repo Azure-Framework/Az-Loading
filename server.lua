@@ -78,8 +78,8 @@ local function buildAndWrite()
   local out = {
     ok = true,
     updatedAt = os.date('!%Y-%m-%dT%H:%M:%SZ'),
-    serverName = Config.ServerName,
-    subtitle = Config.Subtitle,
+    serverName = (Config.Text and Config.Text.serverName) or Config.ServerName,
+    subtitle = (Config.Text and Config.Text.subtitle) or Config.Subtitle,
 
     characters = 0,
     cash = 0,

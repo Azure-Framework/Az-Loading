@@ -1,9 +1,9 @@
 fx_version 'cerulean'
 game 'gta5'
 
-name 'nv_db_loadscreen'
+name 'Az-Loading'
 author 'Azure(TheStoicBear)'
-description 'DB-powered loading screen (HYBRID GLOBAL) with inline CSS/JS + config.js'
+description 'DB-powered loading screen (HYBRID GLOBAL)'
 version '2.0.0'
 
 lua54 'yes'
