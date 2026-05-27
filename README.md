@@ -1,14 +1,59 @@
-# nv_db_loadscreen v2 (Inline)
+# Az Loading
 
-✅ `style.css` and `app.js` are now INLINE inside `html/index.html`
-✅ All colors + text + media are configurable in `html/config.js`
+DB-powered loading screen with Az-style cinematic QBCore-inspired layout
 
-## Customize
-Open `html/config.js` and edit:
-- `colors` (every CSS variable)
-- `text` (all labels)
-- `media.videoSrc` / `media.logoSrc`
+[Framework Docs](https://madebyazure.com/framework/) | [Discord Support](https://discord.gg/tBg2U6CTHE)
+
+## Status
+
+- Resource: `Az-Loading`
+- Version: `cerulean`
+- Framework: `Az-Framework`
 
 ## Install
+
+```cfg
 ensure oxmysql
-ensure nv_db_loadscreen
+ensure ox_lib
+ensure Az-Framework
+ensure Az-Loading
+```
+
+<details>
+<summary>Dependencies</summary>
+
+- `Az-Framework`
+
+
+</details>
+
+<details>
+<summary>Configuration Guide</summary>
+
+1. Place the resource in your server resources folder.
+2. Start dependencies before this resource.
+3. Review `config.lua` or `shared/config.lua` when present.
+4. Restart the resource after changing config values.
+
+</details>
+
+<details>
+<summary>Az-Framework Integration</summary>
+
+Use Az-Framework exports for character, money, job, metadata, and inventory bridge behavior.
+
+```lua
+local Az = exports['Az-Framework']:GetObject()
+local player = exports['Az-Framework']:GetPlayer(source)
+local snapshot = exports['Az-Framework']:GetBridgePlayerSnapshot(source)
+```
+
+</details>
+
+<details>
+<summary>Support</summary>
+
+- Docs: https://madebyazure.com/framework/
+- Discord: https://discord.gg/tBg2U6CTHE
+
+</details>

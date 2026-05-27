@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Az Loading</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body class="runtime-preview-page">
+  <div class="runtime-backdrop" aria-hidden="true"></div>
+  <div class="bg-image" aria-hidden="true"></div>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="" type="video/mp4" />
+  </video>
+  <div class="bg-vignette" aria-hidden="true"></div>
+  <div class="bg-scanlines" aria-hidden="true"></div>
+
+  <main class="scene">
+    <section class="top-row">
+      <div class="showcase-card fade-in-up">
+        <div class="showcase-glow" aria-hidden="true"></div>
+        <div id="showcaseText" class="showcase-text">You can add/remove items, vehicles, jobs &amp; gangs through the shared folder.</div>
+        <div id="showcaseCredit" class="showcase-credit">Photo captured by: Markyoo#8068</div>
+      </div>
+
+      <div class="right-rail fade-in-up delay-1">
+        <div class="build-meta">
+          <span id="buildLabel">FiveM* (b2372) (Beta)</span>
+          <span class="build-dot"></span>
+        </div>
+
+        <div class="keybinds-shell">
+          <button id="kbPrev" class="kb-nav" type="button" aria-label="Previous keybind page">‹</button>
+
+          <div class="keybinds-panel">
+            <div id="keybindsTitle" class="keybinds-title">Default Keybinds</div>
+            <div id="keybindGrid" class="keybind-grid"></div>
+          </div>
+
+          <button id="kbNext" class="kb-nav" type="button" aria-label="Next keybind page">›</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-row fade-in-up delay-2">
+      <div class="brand-lockup">
+        <img id="brandLogo" class="brand-logo" src="assets/logo.png" alt="Server logo" />
+        <div>
+          <div id="brandWordmark" class="brand-wordmark">az loading</div>
+          <div id="brandSubline" class="brand-subline">cinematic database loading screen</div>
+        </div>
+      </div>
+
+      <div class="loader-stack">
+        <div class="details-card" id="detailsCard">
+          <div class="details-head">
+            <div>
+              <div id="loadingCardTitle" class="details-title">Downloading Server Data</div>
+              <div id="progressLabel" class="details-phase">Preparing connection…</div>
+            </div>
+            <div id="liveBadge" class="live-badge">SYNCING</div>
+          </div>
+
+          <div class="details-copy">
+            <p id="loadingCardBody1">Hold tight while we begin downloading all the resources/assets required to play on this server.</p>
+            <p id="loadingCardBody2">After download has been finished successfully, you will be placed into the server and this screen will disappear. Please do not leave or turn off your PC.</p>
+          </div>
+
+          <div id="detailsContent" class="details-content">
+            <div class="section-label" id="detailStatsTitle">Live Server Snapshot</div>
+            <div class="stats-grid">
+              <div class="stat-chip"><span>Characters</span><strong id="statChars">—</strong></div>
+              <div class="stat-chip"><span>Cash</span><strong id="statCash">—</strong></div>
+              <div class="stat-chip"><span>Bank</span><strong id="statBank">—</strong></div>
+              <div class="stat-chip"><span>Jail Records</span><strong id="statJail">—</strong></div>
+              <div class="stat-chip"><span>Businesses</span><strong id="statBiz">—</strong></div>
+              <div class="stat-chip"><span>Vehicles</span><strong id="statVeh">—</strong></div>
+            </div>
+
+            <div class="section-label section-spaced" id="detailBusinessesTitle">Latest Businesses</div>
+            <div id="bizList" class="business-list">
+              <div id="emptyList" class="business-empty">Waiting for live server stats…</div>
+            </div>
+
+            <div id="errorBox" class="error-box hidden">
+              <div id="errorTitle" class="error-title">Server data issue</div>
+              <div id="errorMsg" class="error-msg">—</div>
+            </div>
+          </div>
+
+          <button id="detailsToggle" class="details-toggle" type="button">HIDE DETAILS</button>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-left">
+            <div class="loader-ring" aria-hidden="true"></div>
+            <div class="progress-track">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <button class="gear-btn" type="button" aria-label="Settings">⚙</button>
+        </div>
+
+        <div class="status-row">
+          <div class="status-pill">
+            <span id="statusText">Connecting…</span>
+          </div>
+          <div class="status-meta">
+            <span id="footerStatePrefix">Loading game</span>
+            <span id="progressPct">0%</span>
+            <span class="status-divider">•</span>
+            <span id="clock">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>window.NV_RUNTIME_PREVIEW = true;</script>
+  <script src="app.js"></script>
+</body>
+</html>
