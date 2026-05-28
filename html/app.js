@@ -51,7 +51,7 @@
       const host = url.hostname.replace(/^www\./i, '').toLowerCase();
 
       if (host === 'youtu.be') {
-        const id = url.pathname.replace(/^\
+        const id = url.pathname.replace(/^\/+/, '').split('/')[0];
         return id || null;
       }
 
